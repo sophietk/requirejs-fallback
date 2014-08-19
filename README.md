@@ -13,10 +13,10 @@ bower install
 ```
 grunt serve
 ```
-Then go to [localhost:9000](http://localhost:9000)
+Then go to [localhost:7000](http://localhost:7000)
 
 ### Minified version
 ```
 grunt serve:dist
 ```
-Then go to [localhost:9005](http://localhost:9005)
+Then go to [localhost:7001](http://localhost:7001)

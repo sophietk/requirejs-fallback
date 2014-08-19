@@ -1,0 +1,12 @@
+body {
+    background-image: -webkit-gradient(radial, center top, 0, center top, 900, from(#fff), to(#999));
+    padding: 80px;
+    font-family: Tahoma,serif;
+    color: #444;
+}
+
+h1 span {
+    font-size: 13px;
+    font-weight: normal;
+    color: #888;
+}

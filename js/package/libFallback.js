@@ -1,5 +1,5 @@
 define(function () {
     'use strict';
 
-    console.log('libFallback loaded');
+    $('ul').append('<li>libFallback loaded</li>');
 });

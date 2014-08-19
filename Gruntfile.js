@@ -1,136 +1,172 @@
-'use strict';
+(function () {
+    'use strict';
 
-module.exports = function (grunt) {
-	require('load-grunt-tasks')(grunt);
+    module.exports = function (grunt) {
+        require('load-grunt-tasks')(grunt);
 
-	grunt.initConfig({
+        grunt.initConfig({
 
-		conf: {
-			fingerprint: new Date().getTime(),
-			distDir : 'dist'
-		},
+            conf: {
+                fingerprint: new Date().getTime(),
+                distDir: 'dist'
+            },
 
-		clean: {
-            dist: ['<%= conf.distDir %>/*']
-		},
+            jshint: {
+                app: ['Gruntfile.js', 'js/**/*.js']
+            },
 
-		requirejs: {
-            app: {
-				options: {
-					baseUrl: 'js',
-					optimize: 'none',
-					preserveLicenseComments: false,
-					useStrict: true,
-					wrapShim: true,
-					name: 'main',
-					out: '<%= conf.distDir %>/scripts/<%= conf.fingerprint %>_main-built.js',
-					mainConfigFile: 'js/main.js'
-				}
-			}
-		},
+            clean: {
+                dist: ['<%= conf.distDir %>/*']
+            },
 
-		uglify: {
-            app: {
-                files: {
-                    '<%= conf.distDir %>/scripts/<%= conf.fingerprint %>_main-built.js': '<%= conf.distDir %>/scripts/<%= conf.fingerprint %>_main-built.js',
-                    '<%= conf.distDir %>/scripts/<%= conf.fingerprint %>_require.js': 'bower_components/requirejs/require.js'
-				}
-			}
-		},
+            requirejs: {
+                app: {
+                    options: {
+                        baseUrl: 'js',
+                        optimize: 'none',
+                        preserveLicenseComments: false,
+                        useStrict: true,
+                        wrapShim: true,
+                        name: 'main',
+                        out: '<%= conf.distDir %>/scripts/<%= conf.fingerprint %>_main-built.js',
+                        mainConfigFile: 'js/main.js'
+                    }
+                }
+            },
 
-		htmlmin: {
-			app: {
-				files: {
-					'<%= conf.distDir %>/index.html': 'index.html'
-				}
-			}
-		},
+            uglify: {
+                app: {
+                    files: {
+                        '<%= conf.distDir %>/scripts/<%= conf.fingerprint %>_main-built.js': '<%= conf.distDir %>/scripts/<%= conf.fingerprint %>_main-built.js',
+                        '<%= conf.distDir %>/scripts/<%= conf.fingerprint %>_require.js': 'bower_components/requirejs/require.js'
+                    }
+                }
+            },
 
-		usemin: {
-			html: ['<%= conf.distDir %>/{,*/}*.html'],
-			css: ['<%= conf.distDir %>/styles/{,*/}*.css'],
-			options: {
-				dirs: ['<%= conf.distDir %>']
-			}
-		},
+            copy: {
+                libFallback : {
+                    src: 'js/package/libFallback.js',
+                    dest: '<%= conf.distDir %>/scripts/package/libFallback.js'
+                }
+            },
 
-		replace: {
-			app: {
-				options: {
-					patterns: [
-						{ match: /scripts\/main-built/g, replacement: 'scripts/<%= conf.fingerprint %>_main-built', expression: false },
-						{ match: /\.\.\/bower_components\/requirejs\/require/g, replacement: 'scripts/<%= conf.fingerprint %>_require', expression: false }
-					],
-					prefix: ''
-				},
-				files: {
-					'<%= conf.distDirV1 %>/index.html': '<%= conf.distDir %>/index.html'
-				}
-			}
-		},
+            htmlmin: {
+                app: {
+                    files: {
+                        '<%= conf.distDir %>/index.html': 'index.html'
+                    }
+                }
+            },
 
-		compress: {
-			deliver: {
-				options: {
-					archive: 'livrables/<%= conf.archiveName %>.tgz',
-					mode: 'tgz'
-				},
-				expand: true,
-				src: ["**/*"],
-				cwd: "dist/"
-			}
-		},
+            cssmin: {
+                app: {
+                    options: {
+                        compatibility: 'ie8'
+                    },
+                    files: {
+                        '<%= conf.distDir %>/styles/<%= conf.fingerprint %>_main.css': [
+                            'css/app.css'
+                        ]
+                    }
+                }
+            },
 
-		watch: {
-			html: {
-				files: ['**/*.html']
-			},
-			options: {
-				livereload: true
-			}
-		},
+            usemin: {
+                html: ['<%= conf.distDir %>/{,*/}*.html'],
+                css: ['<%= conf.distDir %>/styles/{,*/}*.css'],
+                options: {
+                    dirs: ['<%= conf.distDir %>']
+                }
+            },
 
-		connect: {
-			dev : {
-				options: {
-					port: 9000,
-					base: '.'
-				}
-			},
-			dist: {
-				options: {
-					keepalive: true,
-					port: 9005,
-					base: 'dist'
-				}
-			}
-		}
-	});
+            replace: {
+                app: {
+                    options: {
+                        patterns: [
+                            { match: /scripts\/main-built/g, replacement: 'scripts/<%= conf.fingerprint %>_main-built', expression: false },
+                            { match: /styles\/main/g, replacement: 'styles/<%= conf.fingerprint %>_main', expression: false },
+                            { match: /bower_components\/requirejs\/require/g, replacement: 'scripts/<%= conf.fingerprint %>_require', expression: false },
+                            { match: /dev version/g, replacement: 'minified version', expression: false }
+                        ],
+                        prefix: ''
+                    },
+                    files: {
+                        '<%= conf.distDir %>/index.html': '<%= conf.distDir %>/index.html'
+                    }
+                }
+            },
 
-	grunt.registerTask('build', function(target){
+            compress: {
+                deliver: {
+                    options: {
+                        archive: 'livrables/<%= conf.archiveName %>.tgz',
+                        mode: 'tgz'
+                    },
+                    expand: true,
+                    src: ["**/*"],
+                    cwd: "dist/"
+                }
+            },
 
-		var tasks = [
-			'clean',
-			'requirejs',
-			'htmlmin',
-			'uglify',
-			'copy',
-			'usemin',
-			'replace'
-		];
+            watch: {
+                html: {
+                    files: ['**/*.html']
+                },
+                scripts: {
+                    files: ['js/**/*.js'],
+                    tasks: ['jshint'],
+                    options: {
+                        spawn: false
+                    }
+                },
+                options: {
+                    livereload: true
+                }
+            },
 
-		grunt.task.run(tasks);
-	});
+            connect: {
+                dev: {
+                    options: {
+                        port: 7000,
+                        base: '.'
+                    }
+                },
+                dist: {
+                    options: {
+                        keepalive: true,
+                        port: 7001,
+                        base: 'dist'
+                    }
+                }
+            }
+        });
 
-	grunt.registerTask('serve', function(target){
+        grunt.registerTask('build', function () {
 
-		if(target === "dist") {
-			grunt.task.run(['build', 'connect:dist']);
-		} else {
-			grunt.task.run(['connect:dev', 'watch']);
-		}
-	});
+            var tasks = [
+                'clean',
+                'requirejs',
+                'htmlmin',
+                'cssmin',
+                'uglify',
+                'copy',
+                'usemin',
+                'replace'
+            ];
 
-	grunt.registerTask('deliver', ['build', 'compress']);
+            grunt.task.run(tasks);
+        });
 
-};
+        grunt.registerTask('serve', function (target) {
+
+            if (target === "dist") {
+                grunt.task.run(['build', 'connect:dist']);
+            } else {
+                grunt.task.run(['connect:dev', 'watch']);
+            }
+        });
+
+        grunt.registerTask('deliver', ['build', 'compress']);
+
+    };
+}());

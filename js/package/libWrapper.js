@@ -1,6 +1,8 @@
 define(['jquery'], function () {
     'use strict';
 
+    $('ul').append('<li>libWrapper loaded</li>');
+
     require.config({
         waitSeconds: 1,
         paths: {
@@ -11,8 +13,8 @@ define(['jquery'], function () {
         }
     });
 
-    require(['lib'], function() {
-        console.log('Lib loaded');
+    require(['lib'], function () {
+        $('ul').append('<li>lib (=libFallback) loaded</li>');
     });
 
 });
