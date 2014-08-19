@@ -6,9 +6,12 @@
 
         grunt.initConfig({
 
+            pkg: grunt.file.readJSON('package.json'),
+
             conf: {
                 fingerprint: new Date().getTime(),
-                distDir: 'dist'
+                distDir: 'dist',
+                archiveName: '<%= pkg.name %>-<%= pkg.version %>'
             },
 
             jshint: {
@@ -99,12 +102,12 @@
             compress: {
                 deliver: {
                     options: {
-                        archive: 'livrables/<%= conf.archiveName %>.tgz',
+                        archive: 'delivery/<%= conf.archiveName %>.tgz',
                         mode: 'tgz'
                     },
                     expand: true,
-                    src: ["**/*"],
-                    cwd: "dist/"
+                    src: ['**/*'],
+                    cwd: '<%= conf.distDir %>/'
                 }
             },
 
@@ -135,7 +138,7 @@
                     options: {
                         keepalive: true,
                         port: 7001,
-                        base: 'dist'
+                        base: '<%= conf.distDir %>'
                     }
                 }
             }
@@ -159,7 +162,7 @@
 
         grunt.registerTask('serve', function (target) {
 
-            if (target === "dist") {
+            if (target === 'dist') {
                 grunt.task.run(['build', 'connect:dist']);
             } else {
                 grunt.task.run(['connect:dev', 'watch']);
